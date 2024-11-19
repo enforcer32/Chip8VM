@@ -23,4 +23,12 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(spdlog)
 
+FetchContent_Declare(
+        sdl2
+        GIT_REPOSITORY "https://github.com/libsdl-org/SDL"
+        GIT_TAG "release-2.30.6"
+        GIT_SHALLOW TRUE
+)
+FetchContent_MakeAvailable(sdl2)
+
 add_subdirectory(${CHIP8VM_TARGET_NAME})

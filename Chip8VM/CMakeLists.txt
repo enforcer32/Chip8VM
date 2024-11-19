@@ -1,5 +1,16 @@
 file(GLOB_RECURSE Chip8VMSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Main.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Chip8VM.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Chip8VM.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Display.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Memory.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Memory.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Register.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Register.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Stack.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Stack.cpp"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Keyboard.h"
+	"${CMAKE_CURRENT_SOURCE_DIR}/Keyboard.cpp"
 	
 	"${CMAKE_CURRENT_SOURCE_DIR}/Util/Platform.h"
 	"${CMAKE_CURRENT_SOURCE_DIR}/Util/Assertion.h"
@@ -9,8 +20,23 @@ file(GLOB_RECURSE Chip8VMSources
 	"${CMAKE_CURRENT_SOURCE_DIR}/Util/FileIO.cpp"
 )
 
-add_definitions(-DCHIP8VM_DEBUG)
+add_definitions(-DC8VM_DEBUG)
 
 add_executable(${CHIP8VM_TARGET_NAME} ${Chip8VMSources})
 target_include_directories(${CHIP8VM_TARGET_NAME} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/../")
+target_include_directories(${CHIP8VM_TARGET_NAME} PRIVATE "${CMAKE_BINARY_DIR}/_deps/sdl2-src/include")
 target_link_libraries(${CHIP8VM_TARGET_NAME} PRIVATE spdlog)
+target_link_libraries(${CHIP8VM_TARGET_NAME} PRIVATE SDL2::SDL2 SDL2::SDL2main)
+
+FUNCTION(CopyLibToTarget LIB_NAME TARGET_NAME)
+	ADD_CUSTOM_COMMAND(TARGET ${TARGET_NAME}
+		POST_BUILD
+		COMMAND
+		${CMAKE_COMMAND} -E copy_if_different
+		$<TARGET_FILE:${LIB_NAME}>
+		$<TARGET_FILE_DIR:${TARGET_NAME}>
+	)
+ENDFUNCTION()
+
+CopyLibToTarget(SDL2 ${CHIP8VM_TARGET_NAME})
+CopyLibToTarget(SDL2main ${CHIP8VM_TARGET_NAME})
